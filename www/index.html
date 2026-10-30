@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#faf9f5">
+<link rel="manifest" href="manifest.webmanifest">
+<title>FreeLLM Hub</title>
+<style>
+:root{--bg:#faf9f5;--surface:#fff;--soft:#f0eee6;--line:#e6e3d8;--tx:#1f1e1d;--mut:#76746c;--acc:#c96442;--acc-tx:#fff;--code:#2b2a28;--code-tx:#f1efe8;--err:#b3261e;--shadow:0 2px 14px rgba(40,30,20,.08)}
+@media (prefers-color-scheme:dark){:root{--bg:#262624;--surface:#30302e;--soft:#3a3936;--line:#44433f;--tx:#f5f4ee;--mut:#a9a69c;--acc:#d97757;--code:#1b1a19;--code-tx:#eceae2;--err:#ff8a80;--shadow:0 2px 14px rgba(0,0,0,.35)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.65 system-ui,"Segoe UI","Noto Sans Arabic",Tahoma,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button,input,textarea,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;padding:0}
+.serif{font-family:"Iowan Old Style","Noto Naskh Arabic",Georgia,"Times New Roman",serif}
+header{display:flex;align-items:center;gap:6px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 8px;min-height:56px}
+header .ttl{flex:1;text-align:center;font-size:15px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ib{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:20px;color:var(--tx)}
+.ib:active,.ib:hover{background:var(--soft)}
+#msgs{flex:1;overflow-y:auto;padding:8px 16px 24px;scroll-behavior:smooth}
+.wrap{max-width:760px;margin:0 auto}
+.hero{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 12px 60px}
+.hero .spark{font-size:42px;color:var(--acc);line-height:1}
+.hero h1{font-weight:400;font-size:30px;margin:14px 0 6px}
+.hero p{color:var(--mut);margin:0;max-width:420px;font-size:14px}
+.u{display:flex;justify-content:flex-start;margin:18px 0 10px}
+.u div{background:var(--soft);border-radius:18px;padding:9px 15px;max-width:88%;white-space:pre-wrap;word-wrap:break-word;unicode-bidi:plaintext}
+.a{margin:10px 0 22px;position:relative}
+.a .meta{color:var(--mut);font-size:12px;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+.a .spk{color:var(--acc);font-size:15px}
+.a .body{word-wrap:break-word;unicode-bidi:plaintext}
+.a .body p{margin:.5em 0}
+.a .body h2,.a .body h3,.a .body h4{margin:.9em 0 .3em;font-weight:600;line-height:1.35}
+.a .body ul,.a .body ol{margin:.4em 0;padding-inline-start:1.4em}
+.a .think{color:var(--mut);font-size:13.5px;border-inline-start:2px solid var(--line);padding-inline-start:10px;margin:4px 0 8px;white-space:pre-wrap;max-height:130px;overflow:auto}
+.a.err .body{color:var(--err)}
+.acts{display:flex;gap:2px;margin-top:2px}
+.acts button{color:var(--mut);font-size:12.5px;padding:3px 8px;border-radius:8px}
+.acts button:active{background:var(--soft)}
+pre{background:var(--code);color:var(--code-tx);border-radius:12px;padding:12px;overflow:auto;direction:ltr;text-align:left;margin:.7em 0;font-size:13.5px;line-height:1.5;position:relative}
+pre .cp{position:sticky;float:right;top:0;color:#bbb;font-size:11px;background:#ffffff18;border-radius:6px;padding:1px 8px;margin:-4px -4px 0 6px}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(--soft);padding:1px 6px;border-radius:6px;direction:ltr;unicode-bidi:embed}
+pre code{background:none;padding:0}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:10px 0 22px}
+.cmp .a{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.comp{padding:6px 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.box{max-width:760px;margin:0 auto;background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:10px 12px 8px}
+.box textarea{width:100%;border:0;outline:0;background:none;resize:none;max-height:180px;min-height:28px;line-height:1.5;padding:2px 4px;unicode-bidi:plaintext}
+.row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.chip{display:flex;align-items:center;gap:6px;max-width:62%;border-radius:12px;padding:5px 10px;color:var(--mut);font-size:13px}
+.chip:active{background:var(--soft)}
+.chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.send{width:36px;height:36px;border-radius:12px;background:var(--acc);color:var(--acc-tx);display:grid;place-items:center;font-size:18px}
+.send:disabled{opacity:.4}
+.plus{width:36px;height:36px;border-radius:12px;font-size:22px;color:var(--mut)}
+.plus:active{background:var(--soft)}
+.note{text-align:center;color:var(--mut);font-size:11.5px;margin-top:6px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:.2s;z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;bottom:0;right:0;width:min(84vw,330px);background:var(--bg);border-inline-start:1px solid var(--line);transform:translateX(105%);transition:.22s;z-index:21;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#drawer.on{transform:none}
+#drawer .top{padding:14px 14px 8px;font-size:18px;display:flex;gap:8px;align-items:center}
+.nb{margin:4px 12px 8px;padding:10px 12px;border-radius:12px;background:var(--soft);display:flex;gap:8px;align-items:center;width:calc(100% - 24px)}
+#hist{flex:1;overflow:auto;padding:4px 8px}
+.h{display:flex;align-items:center;border-radius:10px;padding:2px 4px 2px 8px}
+.h.on,.h:hover{background:var(--soft)}
+.h button.t{flex:1;text-align:start;padding:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14.5px}
+.h button.d{color:var(--mut);padding:6px 10px}
+.hl{color:var(--mut);font-size:12px;padding:10px 12px 2px}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:86vh;background:var(--bg);border-radius:22px 22px 0 0;box-shadow:0 -6px 30px rgba(0,0,0,.25);transform:translateY(105%);transition:.24s;z-index:31;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.on{transform:none}
+.sheet .grab{width:42px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 2px}
+.sheet h3{margin:6px 16px;font-weight:500;font-size:17px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheet .in{overflow:auto;padding:4px 14px 16px}
+.sheet input[type=text],.sheet input[type=password],.sheet input[type=search],.sheet textarea{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;margin:4px 0}
+.sheet input:focus,.sheet textarea:focus{border-color:var(--acc)}
+.pg{margin:12px 0 2px;color:var(--mut);font-size:12.5px;display:flex;gap:6px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line)}.dot.on{background:#3aa876}
+.mi{display:flex;align-items:center;gap:10px;width:100%;text-align:start;padding:9px 10px;border-radius:12px;font-size:14.5px}
+.mi:active{background:var(--soft)}
+.mi.sel{background:var(--soft)}
+.mi small{display:block;color:var(--mut);font-size:11.5px}
+.mi .ck{margin-inline-start:auto;color:var(--acc)}
+.mi.off{opacity:.55}
+.pill{background:var(--acc);color:var(--acc-tx);border-radius:10px;padding:7px 14px;font-size:14px}
+.pill.g{background:var(--soft);color:var(--tx)}
+.pcard{border:1px solid var(--line);background:var(--surface);border-radius:14px;margin:8px 0}
+.pcard>button.hd{display:flex;gap:8px;align-items:center;width:100%;padding:12px;text-align:start}
+.pcard>button.hd b{flex:1;font-weight:500}
+.pcard .bd{display:none;padding:0 12px 12px;font-size:13.5px}
+.pcard.open .bd{display:block}
+.pcard .bd p{color:var(--mut);margin:0 0 6px}
+.r2{display:flex;gap:6px;align-items:center}
+.r2>input{flex:1}
+a{color:var(--acc)}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:12px;font-size:13.5px;z-index:50;opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:.95}
+</style>
+</head>
+<body>
+<header>
+  <button class="ib" id="menu" aria-label="القائمة">☰</button>
+  <div class="ttl" id="ttl">FreeLLM Hub</div>
+  <button class="ib" id="newc" aria-label="محادثة جديدة">✎</button>
+</header>
+<div id="msgs"></div>
+<div class="comp">
+  <div class="box">
+    <textarea id="inp" rows="1" placeholder="كيف أقدر أساعدك اليوم؟"></textarea>
+    <div class="row">
+      <button class="plus" id="plus" aria-label="خيارات">＋</button>
+      <button class="chip" id="chip"><span id="chipT">…</span><span>⌄</span></button>
+      <div class="sp"></div>
+      <button class="send" id="send" aria-label="إرسال">↑</button>
+    </div>
+  </div>
+  <div class="note">الموديلات قد تخطئ، راجع المعلومات المهمة.</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside id="drawer">
+  <div class="top serif"><span style="color:var(--acc)">✺</span> FreeLLM Hub</div>
+  <button class="nb" id="nb2">✎ محادثة جديدة</button>
+  <div class="hl">المحادثات</div>
+  <div id="hist"></div>
+  <button class="nb" id="openSet">⚙️ المزودون والمفاتيح</button>
+</aside>
+
+<div class="sheet" id="plusSheet"><div class="grab"></div><h3>خيارات</h3><div class="in">
+  <button class="mi" id="optCmp"><span style="font-size:20px">⚖️</span><span>وضع المقارنة<small>أرسل السؤال لعدة موديلات معاً</small></span><span class="ck" id="cmpCk"></span></button>
+  <div class="pg">تعليمات النظام</div>
+  <textarea id="sys" rows="3" placeholder="مثال: أجب بالعربية دائماً وباختصار"></textarea>
+  <div class="pg">الحرارة (الإبداع): <b id="tv">0.7</b></div>
+  <input type="range" id="temp" min="0" max="2" step="0.1" style="width:100%;accent-color:var(--acc)">
+</div></div>
+
+<div class="sheet" id="modelSheet"><div class="grab"></div>
+  <h3><span id="msTitle">اختر الموديل</span><button class="pill g" id="multiBtn">اختيار متعدد</button></h3>
+  <div style="padding:0 14px"><input type="search" id="msq" placeholder="ابحث…"></div>
+  <div class="in" id="mlist"></div>
+</div>
+
+<div class="sheet" id="setSheet" style="max-height:92vh"><div class="grab"></div><h3><span>المزودون والمفاتيح</span><button class="pill g" id="setClose">تم</button></h3>
+  <div class="in" id="plist"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const load = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+const store = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+const P = window.FL_DATA;
+
+let cfg = Object.assign({ keys: {}, extra: {}, custom: {}, system: '', temp: 0.7 }, load('fl_cfg', {}));
+let chats = load('fl_chats', []);
+let curId = localStorage.getItem('fl_cur');
+let sel = localStorage.getItem('fl_model') || '';
+let multi = false, cmpMode = false;
+let cmpSel = new Set(load('fl_cmp', []));
+let ctrls = [], busy = false;
+
+const K = (p, m) => p + '||' + m;
+const saveCfg = () => store('fl_cfg', cfg);
+const saveChats = () => store('fl_chats', chats.slice(0, 60));
+const models = p => [...p.models, ...(cfg.custom[p.name] || []).map(id => ({ id, name: id, mod: 'مخصص', custom: true }))];
+const ready = p => p.keyless || !!cfg.keys[p.name];
+const prov = n => P.find(p => p.name === n);
+function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2600); }
+function curChat() { return chats.find(c => c.id === curId); }
+function labelOf(k) { const [pn, mid] = k.split('||'); const p = prov(pn); const m = p && models(p).find(x => x.id === mid); return (m && m.name || mid) + ' · ' + pn; }
+
+function endpoint(p) {
+  let base = p.base;
+  for (const [k, v] of Object.entries(cfg.extra[p.name] || {})) base = base.replace('{' + k + '}', encodeURIComponent(v));
+  if (base.includes('{')) throw new Error('هذا المزود يحتاج إعداداً إضافياً (Account ID) — افتح المزودون والمفاتيح.');
+  const h = { 'Content-Type': 'application/json' };
+  const key = cfg.keys[p.name];
+  if (key) h.Authorization = 'Bearer ' + key;
+  else if (!p.keyless) throw new Error('أدخل مفتاح API لهذا المزود أولاً (القائمة ← المزودون والمفاتيح).');
+  if (p.name === 'OpenRouter') { h['HTTP-Referer'] = 'https://freellm.local'; h['X-Title'] = 'FreeLLM Hub'; }
+  return { base: base.replace(/\/$/, ''), h };
+}
+function friendly(status, txt) {
+  let m = txt; try { const j = JSON.parse(txt); m = (j.error && (j.error.message || j.error)) || j.message || txt; if (typeof m !== 'string') m = JSON.stringify(m); } catch {}
+  const hint = status === 401 || status === 403 ? 'المفتاح غير صحيح أو غير مصرّح.' : status === 429 ? 'تجاوزت الحد المجاني المسموح، انتظر قليلاً أو جرّب موديلاً آخر.' : status === 404 ? 'الموديل غير متاح حالياً عند المزود.' : '';
+  return `خطأ ${status}: ${String(m).slice(0, 300)}${hint ? '\n' + hint : ''}`;
+}
+async function ask(pn, model, messages, onDelta, signal) {
+  const p = prov(pn); const { base, h } = endpoint(p);
+  const body = { model, messages, temperature: Number(cfg.temp) };
+  body.stream = !NATIVE;
+  let r;
+  try { r = await fetch(base + '/chat/completions', { method: 'POST', headers: h, body: JSON.stringify(body), signal }); }
+  catch (e) { if (e.name === 'AbortError') throw e; throw new Error('تعذر الاتصال بالمزود. تحقق من الإنترنت' + (NATIVE ? '.' : '. (في المتصفح قد يمنع المزود الطلب بسبب CORS — استخدم تطبيق الأندرويد.)')); }
+  if (!r.ok) throw new Error(friendly(r.status, await r.text()));
+  if (NATIVE || !r.body) {
+    let j; const t = await r.text(); try { j = JSON.parse(t); } catch { throw new Error('رد غير مفهوم من المزود: ' + t.slice(0, 200)); }
+    const ms = j.choices && j.choices[0] && j.choices[0].message || {};
+    onDelta(ms.content || '', ms.reasoning_content || ms.reasoning || ''); return;
+  }
+  const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '';
+  while (true) {
+    const { done, value } = await rd.read(); if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i; while ((i = buf.indexOf('\n')) >= 0) {
+      const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+      if (!line.startsWith('data:')) continue; const d = line.slice(5).trim(); if (d === '[DONE]') return;
+      let j; try { j = JSON.parse(d); } catch { continue; }
+      if (j.error) throw new Error(typeof j.error === 'string' ? j.error : (j.error.message || 'خطأ من المزود'));
+      const dl = j.choices && j.choices[0] && j.choices[0].delta; if (dl) onDelta(dl.content || '', dl.reasoning_content || dl.reasoning || '');
+    }
+  }
+}
+async function fetchModels(p) {
+  const { base, h } = endpoint(p);
+  const r = await fetch(base + '/models', { headers: h });
+  const t = await r.text(); if (!r.ok) throw new Error(friendly(r.status, t));
+  const j = JSON.parse(t); const arr = Array.isArray(j) ? j : (j.data || j.models || []);
+  return arr.map(m => (typeof m === 'string' ? m : (m.id || m.name || '')).replace(/^models\//, '')).filter(Boolean);
+}
+
+function inline(s) { return esc(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>').replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<i>$2</i>'); }
+function md(src) {
+  return src.split('```').map((seg, i) => {
+    if (i % 2) { const nl = seg.indexOf('\n'); const code = nl >= 0 ? seg.slice(nl + 1) : seg; return `<pre><button class="cp">نسخ</button><code>${esc(code.replace(/\n$/, ''))}</code></pre>`; }
+    let out = '', list = null;
+    const close = () => { if (list) { out += `</${list}>`; list = null; } };
+    for (const ln of seg.split('\n')) {
+      let m;
+      if ((m = ln.match(/^\s*(#{1,4})\s+(.*)/))) { close(); const n = Math.min(m[1].length + 1, 4); out += `<h${n}>${inline(m[2])}</h${n}>`; }
+      else if ((m = ln.match(/^\s*[-*•]\s+(.*)/))) { if (list !== 'ul') { close(); out += '<ul>'; list = 'ul'; } out += `<li>${inline(m[1])}</li>`; }
+      else if ((m = ln.match(/^\s*\d+[.)]\s+(.*)/))) { if (list !== 'ol') { close(); out += '<ol>'; list = 'ol'; } out += `<li>${inline(m[1])}</li>`; }
+      else if (!ln.trim()) close();
+      else { close(); out += `<p>${inline(ln)}</p>`; }
+    }
+    close(); return out;
+  }).join('');
+}
+function fillA(el, text, think) {
+  const b = el.querySelector('.body'); b.innerHTML = md(text || '…');
+  b.querySelectorAll('.cp').forEach(c => c.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(c.parentElement.querySelector('code').textContent); toast('تم النسخ'); });
+  const t = el.querySelector('.think'); if (think) { t.style.display = ''; t.textContent = think; t.scrollTop = 1e9; } else t.style.display = 'none';
+}
+function mkA(label, withActs) {
+  const d = document.createElement('div'); d.className = 'a';
+  d.innerHTML = `<div class="meta"><span class="spk">✺</span><span>${esc(label || '')}</span></div><div class="think" style="display:none"></div><div class="body"></div>` +
+    (withActs ? '<div class="acts"><button class="cpy">نسخ</button></div>' : '');
+  if (withActs) d.querySelector('.cpy').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(d.dataset.raw || ''); toast('تم النسخ'); };
+  return d;
+}
+function stick() { const m = $('#msgs'); if (m.scrollHeight - m.scrollTop - m.clientHeight < 160) m.scrollTop = m.scrollHeight; }
+
+function render() {
+  const box = $('#msgs'); const c = curChat(); box.innerHTML = '';
+  $('#ttl').textContent = c ? c.title : 'FreeLLM Hub';
+  const w = document.createElement('div'); w.className = 'wrap'; box.appendChild(w);
+  if (!c || !c.msgs.length) {
+    w.innerHTML = `<div class="hero"><div class="spark">✺</div><h1 class="serif">كيف أقدر أساعدك اليوم؟</h1><p>${cmpMode ? 'وضع المقارنة مفعّل: اختر الموديلات من الأسفل.' : 'محادثة مع عشرات الموديلات المجانية. اختر الموديل من الأسفل وابدأ.'}</p></div>`;
+    w.firstChild.style.minHeight = '55vh'; return;
+  }
+  for (const m of c.msgs) {
+    if (m.role === 'user') { const u = document.createElement('div'); u.className = 'u'; u.innerHTML = `<div>${esc(m.content)}</div>`; w.appendChild(u); }
+    else if (m.multi) {
+      const g = document.createElement('div'); g.className = 'cmp';
+      for (const r of m.multi) { const a = mkA(r.label, true); a.dataset.raw = r.content; if (r.err) a.classList.add('err'); fillA(a, r.content, r.think); g.appendChild(a); }
+      w.appendChild(g);
+    } else { const a = mkA(m.label, true); a.dataset.raw = m.content; if (m.err) a.classList.add('err'); fillA(a, m.content, m.think); w.appendChild(a); }
+  }
+  box.scrollTop = box.scrollHeight;
+}
+function renderHist() {
+  const h = $('#hist'); h.innerHTML = '';
+  if (!chats.length) h.innerHTML = '<div class="hl">لا توجد محادثات بعد</div>';
+  for (const c of chats.slice().sort((a, b) => b.ts - a.ts)) {
+    const d = document.createElement('div'); d.className = 'h' + (c.id === curId ? ' on' : '');
+    d.innerHTML = `<button class="t">${esc(c.title)}</button><button class="d" aria-label="حذف">✕</button>`;
+    d.querySelector('.t').onclick = () => { curId = c.id; localStorage.setItem('fl_cur', curId); closeAll(); render(); renderHist(); };
+    d.querySelector('.d').onclick = () => { if (confirm('حذف هذه المحادثة؟')) { chats = chats.filter(x => x.id !== c.id); if (curId === c.id) curId = null; saveChats(); render(); renderHist(); } };
+    h.appendChild(d);
+  }
+}
+function newChat() { curId = null; localStorage.removeItem('fl_cur'); closeAll(); render(); renderHist(); $('#inp').focus(); }
+
+const sysMsgs = () => cfg.system.trim() ? [{ role: 'system', content: cfg.system.trim() }] : [];
+function setBusy(b) { busy = b; $('#send').textContent = b ? '■' : '↑'; }
+async function send() {
+  if (busy) { ctrls.forEach(c => c.abort()); return; }
+  const text = $('#inp').value.trim(); if (!text) return;
+  if (cmpMode ? !cmpSel.size : !sel) { toast(cmpMode ? 'اختر موديلاً واحداً على الأقل للمقارنة' : 'اختر موديلاً أولاً'); openModels(); return; }
+  let c = curChat();
+  if (!c) { c = { id: String(Date.now()), title: text.slice(0, 40), ts: Date.now(), msgs: [] }; chats.unshift(c); curId = c.id; localStorage.setItem('fl_cur', curId); }
+  c.msgs.push({ role: 'user', content: text }); c.ts = Date.now(); saveChats();
+  $('#inp').value = ''; grow(); render(); renderHist(); setBusy(true); ctrls = [];
+  const w = $('#msgs .wrap');
+  if (!cmpMode) {
+    const k = sel, [pn, mid] = k.split('||'); const a = mkA(labelOf(k)); w.appendChild(a); fillA(a, '…'); stick();
+    let out = '', think = ''; const ac = new AbortController(); ctrls.push(ac);
+    const ctx = [...sysMsgs(), ...c.msgs.filter(m => !m.multi && !m.err).map(m => ({ role: m.role, content: m.content }))];
+    try {
+      await ask(pn, mid, ctx, (d, t) => { out += d; think += t; fillA(a, out, think); stick(); }, ac.signal);
+      if (!out) throw new Error('رد فارغ من الموديل. جرّب موديلاً آخر.');
+      c.msgs.push({ role: 'assistant', content: out, think: think || undefined, label: labelOf(k) });
+    } catch (e) {
+      if (e.name === 'AbortError') { if (out) c.msgs.push({ role: 'assistant', content: out, label: labelOf(k) }); }
+      else { c.msgs.push({ role: 'assistant', content: '⚠️ ' + e.message, label: labelOf(k), err: true }); }
+    }
+  } else {
+    const g = document.createElement('div'); g.className = 'cmp'; w.appendChild(g); const res = [];
+    await Promise.all([...cmpSel].map(async k => {
+      const [pn, mid] = k.split('||'); const a = mkA(labelOf(k)); g.appendChild(a); fillA(a, '…');
+      const r = { label: labelOf(k), content: '', think: '' }; res.push(r); const ac = new AbortController(); ctrls.push(ac);
+      try { await ask(pn, mid, [...sysMsgs(), { role: 'user', content: text }], (d, t) => { r.content += d; r.think += t; fillA(a, r.content, r.think); stick(); }, ac.signal); }
+      catch (e) { if (e.name !== 'AbortError') { r.err = true; r.content = '⚠️ ' + e.message; a.classList.add('err'); fillA(a, r.content); } }
+    }));
+    c.msgs.push({ role: 'assistant', multi: res });
+  }
+  saveChats(); setBusy(false); render();
+}
+
+function updChip() { $('#chipT').textContent = cmpMode ? `مقارنة (${cmpSel.size})` : (sel ? labelOf(sel).split(' · ')[0] : 'اختر موديلاً'); }
+function openModels() { closeAll(); renderModels(); $('#modelSheet').classList.add('on'); $('#scrim').classList.add('on'); }
+function renderModels() {
+  const q = $('#msq').value.trim().toLowerCase(), box = $('#mlist'); box.innerHTML = '';
+  $('#multiBtn').textContent = multi ? 'اختيار واحد' : 'اختيار متعدد';
+  $('#msTitle').textContent = multi ? 'اختر عدة موديلات' : 'اختر الموديل';
+  for (const p of [...P].sort((x, y) => ready(y) - ready(x))) {
+    const ms = models(p).filter(m => !q || (m.id + m.name + p.name).toLowerCase().includes(q)); if (!ms.length) continue;
+    const g = document.createElement('div');
+    g.innerHTML = `<div class="pg"><span class="dot ${ready(p) ? 'on' : ''}"></span>${p.flag || ''} ${esc(p.name)} ${ready(p) ? '' : '— يحتاج مفتاحاً'}</div>`;
+    for (const m of ms) {
+      const k = K(p.name, m.id), on = multi ? cmpSel.has(k) : sel === k;
+      const b = document.createElement('button'); b.className = 'mi' + (on ? ' sel' : '') + (ready(p) ? '' : ' off');
+      b.innerHTML = `<span style="min-width:0;word-break:break-all">${esc(m.name || m.id)}<small>${esc(m.mod || '')}</small></span><span class="ck">${on ? '✓' : ''}</span>`;
+      b.onclick = () => {
+        if (!ready(p)) { toast('أضف مفتاح ' + p.name + ' أولاً'); openSettings(); return; }
+        if (multi) { cmpSel.has(k) ? cmpSel.delete(k) : cmpSel.add(k); store('fl_cmp', [...cmpSel]); renderModels(); updChip(); }
+        else { sel = k; localStorage.setItem('fl_model', k); updChip(); closeAll(); }
+      };
+      g.appendChild(b);
+    }
+    box.appendChild(g);
+  }
+}
+$('#msq').oninput = renderModels;
+$('#multiBtn').onclick = () => { multi = !multi; cmpMode = multi; $('#cmpCk').textContent = cmpMode ? '✓' : ''; renderModels(); updChip(); if (!(curChat() && curChat().msgs.length)) render(); };
+$('#optCmp').onclick = () => { cmpMode = !cmpMode; multi = cmpMode; $('#cmpCk').textContent = cmpMode ? '✓' : ''; updChip(); closeAll(); if (!(curChat() && curChat().msgs.length)) render(); toast(cmpMode ? 'وضع المقارنة مفعّل — اختر الموديلات' : 'وضع المحادثة العادية'); if (cmpMode) openModels(); };
+
+function openSettings() {
+  closeAll(); const box = $('#plist'); const opened = new Set([...box.querySelectorAll('.pcard.open')].map(e => e.dataset.n)); box.innerHTML = '';
+  const info = document.createElement('p'); info.style.cssText = 'color:var(--mut);font-size:13px;margin:4px 2px';
+  info.textContent = 'المفاتيح تُحفظ على هذا الجهاز فقط. Kilo Code و LLM7.io و OVHcloud تعمل بدون مفتاح.'; box.appendChild(info);
+  for (const p of P) {
+    const el = document.createElement('div'); el.className = 'pcard' + (opened.has(p.name) ? ' open' : ''); el.dataset.n = p.name;
+    el.innerHTML = `<button class="hd"><span class="dot ${ready(p) ? 'on' : ''}"></span><b>${p.flag || ''} ${esc(p.name)}</b><span style="color:var(--mut);font-size:12px">${models(p).length} موديل</span></button>
+      <div class="bd"><p>${esc(p.description)}</p>
+      <div class="r2"><input type="password" class="k" placeholder="${cfg.keys[p.name] ? '•••••• محفوظ — اكتب لتغييره' : (p.keyless ? 'مفتاح اختياري' : 'مفتاح API')}"><button class="pill sk">حفظ</button></div>
+      ${p.extra.map(x => `<div class="r2"><input type="text" class="ex" data-k="${x.key}" placeholder="${esc(x.label)}" value="${esc((cfg.extra[p.name] || {})[x.key] || '')}"></div>`).join('')}
+      <div class="r2" style="margin-top:6px"><a href="${esc(p.url)}" target="_blank" rel="noopener" style="flex:1">🔑 احصل على مفتاح</a><button class="pill g fm">⟳ جلب كل الموديلات</button></div>
+      <div class="r2"><input type="text" class="cm" placeholder="أضف موديل يدوياً (ID)"><button class="pill g am">إضافة</button></div>
+      ${p.more ? `<p>يوجد أيضاً: ${esc(p.more)} — استخدم «جلب كل الموديلات».</p>` : ''}</div>`;
+    el.querySelector('.hd').onclick = () => el.classList.toggle('open');
+    el.querySelector('.sk').onclick = () => {
+      const v = el.querySelector('.k').value.trim(); if (v) cfg.keys[p.name] = v; else if (!p.keyless || confirm('حذف المفتاح المحفوظ؟')) delete cfg.keys[p.name];
+      const ex = {}; el.querySelectorAll('.ex').forEach(i => ex[i.dataset.k] = i.value.trim()); if (Object.keys(ex).length) cfg.extra[p.name] = ex;
+      saveCfg(); toast('تم الحفظ'); openSettings(); $('#setSheet').classList.add('on'); $('#scrim').classList.add('on'); el.classList.add('open');
+    };
+    el.querySelector('.am').onclick = () => { const v = el.querySelector('.cm').value.trim(); if (!v) return; (cfg.custom[p.name] ||= []); if (!cfg.custom[p.name].includes(v)) cfg.custom[p.name].push(v); saveCfg(); toast('أُضيف الموديل'); openSettings(); $('#setSheet').classList.add('on'); $('#scrim').classList.add('on'); };
+    el.querySelector('.fm').onclick = async e => {
+      const b = e.target; b.disabled = true; b.textContent = '…';
+      try {
+        const ids = await fetchModels(p); const known = new Set(models(p).map(m => m.id)); (cfg.custom[p.name] ||= []);
+        ids.forEach(id => { if (!known.has(id)) cfg.custom[p.name].push(id); }); saveCfg(); toast(`تم جلب ${ids.length} موديل`);
+        openSettings(); $('#setSheet').classList.add('on'); $('#scrim').classList.add('on');
+      } catch (err) { alert(err.message); b.disabled = false; b.textContent = '⟳ جلب كل الموديلات'; }
+    };
+    box.appendChild(el);
+  }
+  $('#setSheet').classList.add('on'); $('#scrim').classList.add('on');
+}
+
+function closeAll() { document.querySelectorAll('.sheet,#drawer').forEach(e => e.classList.remove('on')); $('#scrim').classList.remove('on'); }
+$('#scrim').onclick = closeAll;
+$('#menu').onclick = () => { renderHist(); $('#drawer').classList.add('on'); $('#scrim').classList.add('on'); };
+$('#newc').onclick = newChat; $('#nb2').onclick = newChat;
+$('#openSet').onclick = openSettings; $('#setClose').onclick = () => { closeAll(); renderModelDefault(); updChip(); };
+$('#plus').onclick = () => { closeAll(); $('#sys').value = cfg.system; $('#temp').value = cfg.temp; $('#tv').textContent = cfg.temp; $('#plusSheet').classList.add('on'); $('#scrim').classList.add('on'); };
+$('#sys').oninput = e => { cfg.system = e.target.value; saveCfg(); };
+$('#temp').oninput = e => { cfg.temp = Number(e.target.value); $('#tv').textContent = cfg.temp; saveCfg(); };
+$('#chip').onclick = openModels;
+$('#send').onclick = send;
+function grow() { const t = $('#inp'); t.style.height = 'auto'; t.style.height = Math.min(t.scrollHeight, 180) + 'px'; }
+$('#inp').addEventListener('input', grow);
+$('#inp').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && window.matchMedia('(hover:hover)').matches) { e.preventDefault(); send(); } });
+function renderModelDefault() {
+  const valid = sel && (() => { const [pn, mid] = sel.split('||'); const p = prov(pn); return p && models(p).some(m => m.id === mid); })();
+  if (!valid) { const p = P.find(ready); sel = p ? K(p.name, models(p)[0].id) : ''; if (sel) localStorage.setItem('fl_model', sel); }
+}
+if ('serviceWorker' in navigator && !NATIVE && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+renderModelDefault(); updChip(); render(); renderHist();
+</script>
+</body>
+</html>
